@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="profile-container">
+
+        <div class="profile-header">
+            <img
+                src="https://via.placeholder.com/120"
+                alt="Profile Picture"
+                class="profile-pic"
+            >
+
+            <h2 id="username">John Doe</h2>
+            <p id="bio">Web Developer & Content Creator</p>
+
+            <div class="stats">
+                <div>
+                    <h3 id="postCount">0</h3>
+                    <p>Posts</p>
+                </div>
+
+                <div>
+                    <h3 id="followersCount">0</h3>
+                    <p>Followers</p>
+                </div>
+
+                <div>
+                    <h3 id="followingCount">0</h3>
+                    <p>Following</p>
+                </div>
+            </div>
+
+            <button id="followBtn">
+                Follow
+            </button>
+        </div>
+
+        <hr>
+
+        <h2>User Posts</h2>
+
+        <div id="userPosts"></div>
+
+    </div>
+
+    <script>
+
+        const API_USERS =
+        "http://localhost:5000/api/users";
+
+        const API_POSTS =
+        "http://localhost:5000/api/posts";
+
+        const userId =
+        "665a123456789";
+
+        async function loadProfile() {
+
+            const users =
+            await fetch(API_USERS);
+
+            const userData =
+            await users.json();
+
+            const user =
+            userData[0];
+
+            document.getElementById("username")
+            .innerText = user.username;
+
+            document.getElementById("bio")
+            .innerText = user.bio;
+
+            document.getElementById("followersCount")
+            .innerText = user.followers.length;
+
+            document.getElementById("followingCount")
+            .innerText = user.following.length;
+        }
+
+        async function loadPosts() {
+
+            const response =
+            await fetch(API_POSTS);
+
+            const posts =
+            await response.json();
+
+            const userPosts =
+            posts.filter(post =>
+                post.user &&
+                post.user._id === userId
+            );
+
+            document.getElementById("postCount")
+            .innerText = userPosts.length;
+
+            let html = "";
+
+            userPosts.forEach(post => {
+
+                html += `
+                    <div class="post">
+                        <p>${post.content}</p>
+
+                        <button>
+                            ❤️ ${post.likes.length}
+                        </button>
+                    </div>
+                `;
+            });
+
+            document.getElementById("userPosts")
+            .innerHTML = html;
+        }
+
+        loadProfile();
+        loadPosts();
+
+    </script>
+
+</body>
+</html>
